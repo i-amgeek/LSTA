@@ -46,21 +46,21 @@ class MyConvLSTACell(nn.Module):
             torch.nn.init.constant(self.conv_o_s.bias, 0)
             torch.nn.init.constant(self.conv_o_cam.weight, 0)
         else:
-            torch.nn.init.xavier_normal(self.conv_i_s.weight)
+            torch.nn.init.xavier_normal_(self.conv_i_s.weight)
             torch.nn.init.constant(self.conv_i_s.bias, 0)
-            torch.nn.init.xavier_normal(self.conv_i_cam.weight)
+            torch.nn.init.xavier_normal_(self.conv_i_cam.weight)
 
-            torch.nn.init.xavier_normal(self.conv_f_s.weight)
+            torch.nn.init.xavier_normal_(self.conv_f_s.weight)
             torch.nn.init.constant(self.conv_f_s.bias, 0)
-            torch.nn.init.xavier_normal(self.conv_f_cam.weight)
+            torch.nn.init.xavier_normal_(self.conv_f_cam.weight)
 
-            torch.nn.init.xavier_normal(self.conv_a_s.weight)
+            torch.nn.init.xavier_normal_(self.conv_a_s.weight)
             torch.nn.init.constant(self.conv_a_s.bias, 0)
-            torch.nn.init.xavier_normal(self.conv_a_cam.weight)
+            torch.nn.init.xavier_normal_(self.conv_a_cam.weight)
 
-            torch.nn.init.xavier_normal(self.conv_o_s.weight)
+            torch.nn.init.xavier_normal_(self.conv_o_s.weight)
             torch.nn.init.constant(self.conv_o_s.bias, 0)
-            torch.nn.init.xavier_normal(self.conv_o_cam.weight)
+            torch.nn.init.xavier_normal_(self.conv_o_cam.weight)
 
         # Memory params
 

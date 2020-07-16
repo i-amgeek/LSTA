@@ -1,6 +1,7 @@
 import resNetNew
 from torch.autograd import Variable
 from MyConvLSTACell import *
+from tqdm import  tqdm
 
 
 class attentionModel(nn.Module):
@@ -28,6 +29,10 @@ class attentionModel(nn.Module):
             class_idx = idxs[:, 0]
             cam = torch.bmm(self.resNet.fc.weight[class_idx].unsqueeze(1), feature_conv1).view(x.size(0), 1, 7, 7)
             state_att, state_inp, _ = self.lsta_cell(x, cam, state_att, state_inp)
+            import gc
+            gc.collect()
+
+
         feats = self.avgpool(state_inp[0]).view(state_inp[0].size(0), -1)
         logits = self.classifier(feats)
         return logits, feats

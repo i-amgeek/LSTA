@@ -1,0 +1,8 @@
+Number of Epochs = 300
+lr = 0.001
+Train Batch Size = 32
+Sequence Length = 25
+Decay steps = [25, 75, 150]
+Decay factor = 0.1
+Memory size = 512
+Memory cam classes = 100

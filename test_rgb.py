@@ -7,6 +7,7 @@ from makeDataset import *
 import sys
 import argparse
 from gen_splits import *
+from tqdm import tqdm
 
 #TODO: create separate dirs for stage1 and stage 2
 
@@ -52,9 +53,9 @@ def main_run(dataset, root_dir, checkpoint_path, seqLen, testBatchSize, memSize,
 
     print('Number of test samples = {}'.format(vid_seq_test.__len__()))
 
-
+    print("Dataset shape: ", len(vid_seq_test.__getitem__(0)), vid_seq_test.__getitem__(0)[0].shape , end='\n\n\n')
     test_loader = torch.utils.data.DataLoader(vid_seq_test, batch_size=testBatchSize,
-                            shuffle=False, num_workers=4, pin_memory=True)
+                            shuffle=False, num_workers=0, pin_memory=True)
 
 
     model = attentionModel(num_classes=num_classes, mem_size=memSize, c_cam_classes=c_cam_classes)
@@ -63,24 +64,27 @@ def main_run(dataset, root_dir, checkpoint_path, seqLen, testBatchSize, memSize,
     else:
             print('Checkpoint file {} does not exist'.format(checkpoint_path))
             sys.exit()
-    last_checkpoint = torch.load(checkpoint_path)
+    last_checkpoint = torch.load(checkpoint_path) #, map_location=torch.device('cpu'))
     model.load_state_dict(last_checkpoint['model_state_dict'])
     model.cuda()
     model.train(False)
+    model.eval()
 
     print('Testing...')
     test_iter = 0
     test_samples = 0
     numCorr = 0
-    for j, (inputs, targets) in enumerate(test_loader):
-        print('testing inst = {}'.format(j))
+    for j, (inputs, targets) in tqdm(enumerate(test_loader)):
         test_iter += 1
         test_samples += inputs.size(0)
-        inputVariable = Variable(inputs.permute(1, 0, 2, 3, 4).cuda(), volatile=True)
-        output_label, _ = model(inputVariable)
-        _, predicted = torch.max(output_label.data, 1)
-        numCorr += (predicted == targets.cuda()).sum()
-    test_accuracy = (numCorr / test_samples) * 100
+        with torch.no_grad():
+            print(inputs.shape, targets.shape)
+            inputVariable = Variable(inputs.permute(1, 0, 2, 3, 4).cuda())
+            output_label, _ = model(inputVariable)
+            del inputVariable
+            _, predicted = torch.max(output_label.data, 1)
+            numCorr += (predicted == targets.cuda()).sum()
+    test_accuracy = (numCorr.cpu().item() / test_samples) * 100
     print('Test Accuracy after = {}%'.format(test_accuracy))
 
 def __main__():

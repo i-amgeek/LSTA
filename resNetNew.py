@@ -37,7 +37,7 @@ class BasicBlock(nn.Module):
         self.stride = stride
 
     def forward(self, x):
-        residual = x
+#         residual = x
 
         out = self.conv1(x)
         out = self.bn1(out)
@@ -49,6 +49,8 @@ class BasicBlock(nn.Module):
 
         if self.downsample is not None:
             residual = self.downsample(x)
+        else:
+            residual = x
 
         outBN = outBN + residual
         outBN = self.relu(outBN)
@@ -94,6 +96,8 @@ class Bottleneck(nn.Module):
 
         out += residual
         out = self.relu(out)
+        import gc
+        gc.collect()
 
         return out
 
@@ -122,6 +126,8 @@ class ResNet(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
+            import gc
+            gc.collect()
 
     def _make_layer(self, block, planes, blocks, stride=1, noBN=False):
         downsample = None
@@ -170,6 +176,8 @@ class ResNet(nn.Module):
         x = self.avgpool(conv_layer4BN)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
+        import gc
+        gc.collect()
         if self.noBN:
             return x, conv_layer4BN, conv_layer4NBN
         else:
